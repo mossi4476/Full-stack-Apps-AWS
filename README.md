@@ -12,7 +12,7 @@ You can clone this repo to run the project locally or test live through Elastic 
 To complete this project, you will need to:
 
 * Set up node environment <br>
-cd project starter code
+cd project starter code <br>
 npm i <br>
 * Create a new endpoint in the server.js file <br>
 * Run the application locally <br>
