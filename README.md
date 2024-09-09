@@ -5,19 +5,28 @@ You will build upon the application we've developed during the lessons in this c
 
 ## Getting Started
 
-You can clone this repo to run the project locally, or navigate to the workspace in the Udacity course.
+You can clone this repo to run the project locally, or test live throught Elastic Beanstalk deployment.
 
 ## Project Instructions
 
 To complete this project, you will need to:
 
 * Set up node environment
+cd project starter code
+npm i
 * Create a new endpoint in the server.js file
+* Run application locally
+npm start
 * Deploying your system
+eb init
+eb create
+eb deploy
 
 ## Testing
 
 Successful URL responses should have a 200 code. Ensure that you include error codes for the scenario that someone uploads something other than an image and for other common errors.
+Open in browser: 
+http://full-stack-apps-aws-dev3.us-east-1.elasticbeanstalk.com/filteredimage?image_url=https://th.bing.com/th/id/OIP.2bJ9_f9aKoGCME7ZIff-ZwHaJ4?rs=1&pid=ImgDetMain
 
 ## License
 
