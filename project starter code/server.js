@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import axios from 'axios';
 import { filterImageFromURL, deleteLocalFiles } from './util/util.js';
 
 // Init the Express application
@@ -11,38 +12,36 @@ const port = process.env.PORT || 8082;
 // Use the body parser middleware for post requests
 app.use(bodyParser.json());
 
-// @TODO1 IMPLEMENT A RESTFUL ENDPOINT
-// GET /filteredimage?image_url={{URL}}
+// Endpoint to filter an image from a public URL
 app.get('/filteredimage', async (req, res) => {
-  const imageUrl = req.query.image_url;
+  const { image_url } = req.query;
 
-  // 1. Validate the image_url query
-  if (!imageUrl) {
-    return res.status(400).send({ message: 'The image_url query parameter is required.' });
+  // Validate the image_url query
+  if (!image_url) {
+    return res.status(400).send('Image URL must not be empty!');
   }
 
+  // Check if the image_url is a valid URL
   try {
-    // 2. Call filterImageFromURL(image_url) to filter the image
-    const filteredPath = await filterImageFromURL(imageUrl);
-
-    // 3. Send the resulting file in the response
-    res.sendFile(filteredPath, (err) => {
-      if (err) {
-        return res.status(500).send({ message: 'Error processing image.' });
-      }
-
-      // 4. Delete any files on the server on finish of the response
-      deleteLocalFiles([filteredPath]);
-    });
+    new URL(image_url);
   } catch (error) {
-    res.status(422).send({ message: 'Unable to process the image at the provided URL.' });
+    return res.status(400).send({ message: 'The image_url is not valid.' });
   }
-});
 
-// Root Endpoint
-// Displays a simple message to the user
-app.get('/', async (req, res) => {
-  res.send('try GET /filteredimage?image_url={{URL}}');
+  // Attempt to fetch and process the image
+  try {
+    // Fetch the image data using axios
+    const response = await axios.get(image_url, { responseType: 'arraybuffer' });
+
+    // Pass the fetched data to Jimp for processing
+    const filteredImage = await filterImageFromURL(response.data);
+    
+    // Send the resulting file in the response
+    res.sendFile(filteredImage, () => deleteLocalFiles([filteredImage]));
+  } catch (error) {
+    console.error(error);
+    res.status(422).send({ message: 'Unable to process image at the provided URL.' });
+  }
 });
 
 // Start the Server
